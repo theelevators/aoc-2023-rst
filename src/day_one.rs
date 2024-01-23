@@ -1,6 +1,6 @@
+use std::usize;
 
-pub fn solution_one(file:&str) {
-    
+pub fn solution_one(file: &str) {
     let mut sum: i32 = 0;
 
     for line in file.split("\n") {
@@ -30,26 +30,50 @@ pub fn solution_one(file:&str) {
     println!("{}", sum);
 }
 
+pub fn solution_two(file: &str) {
+    let mut sum: i32 = 0;
 
+    for line in file.split("\n") {
+        let line_chars: Vec<String> = line.chars().map(|c| c.to_string()).collect();
 
-pub fn solution_two(file:&str){
-
-    let mut sum:i32 = 0;
-    
-     for line in file.split("\n") {
-
-        let line_chars:Vec<String> = line.chars().map(|c| c.to_string()).collect();
-    
-    
-        if let (Some(first), Some(last)) =  (line_chars.first().unwrap().parse::<i32>().ok() , line_chars.last().unwrap().parse::<i32>().ok()) {
-                let combo = format!("{}{}",first,last);
-
-                sum += combo.parse::<i32>().unwrap();
-            continue;
-        } 
-
+        let mut word_num: String;
+        let mut first: String;
+        let mut start: u32 = 0;
+        let mut end: u32 = 0;
+        while end < line_chars.len() as u32 {
         
-        
-         
-    }
+        let char:String = String::from(line_chars.get(start as usize).unwrap());
+            
+         if (start == 0) & (char.parse::<i32>().is_ok()) {
+                first = char.to_string();   
+                break;
+            }
+            let slice:&[String] = &line_chars[start as usize..end as usize];
+    
+            if is_number(slice){
+
+                first = slice.join("");
+                break;
+            }
+            
+        }
+        println!("first")
+   }
 }
+
+
+fn is_number(slice:&[String])-> bool{
+
+    match slice.join("").as_str() {
+       "one" => true,
+        "two"=> true,
+        "three" => true,
+        "four" => true,
+        "five" => true,
+        "six" => true,
+        "seven" => true,
+        "eight" => true,
+        "nine" => true,
+        _ => false
+    }
+}       
