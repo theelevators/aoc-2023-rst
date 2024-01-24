@@ -1,4 +1,4 @@
-use core::{panic, slice};
+
 
 pub fn solution_one(file: &str) {
     let mut sum: i32 = 0;
