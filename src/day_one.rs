@@ -1,4 +1,4 @@
-use std::usize;
+use core::{panic, slice};
 
 pub fn solution_one(file: &str) {
     let mut sum: i32 = 0;
@@ -34,39 +34,139 @@ pub fn solution_two(file: &str) {
     let mut sum: i32 = 0;
 
     for line in file.split("\n") {
+
+        if line == "" {continue};
         let line_chars: Vec<String> = line.chars().map(|c| c.to_string()).collect();
+        let mut reverse_chars:Vec<String> = line_chars.clone();
+        reverse_chars.reverse();
+        let mut first:String = String::new();
+        let mut last: String = String::new();
+        let mut idx = 0;
+        loop {
+            let current: String = String::from(line_chars.get(idx).unwrap());
 
-        let mut word_num: String;
-        let mut first: String;
-        let mut start: u32 = 0;
-        let mut end: u32 = 0;
-        while end < line_chars.len() as u32 {
-        
-        let char:String = String::from(line_chars.get(start as usize).unwrap());
-            
-         if (start == 0) & (char.parse::<i32>().is_ok()) {
-                first = char.to_string();   
+            if current.parse::<i32>().is_ok() {
+                first = current;
                 break;
             }
-            let slice:&[String] = &line_chars[start as usize..end as usize];
-    
-            if is_number(slice){
-
-                first = slice.join("");
+            let slice: &[String] = &line_chars[0..idx+1];
+            
+            if is_number(slice) {
+                first = to_number(slice).to_string();
                 break;
             }
-            
+
+            let leftover = has_number(&slice);
+
+            if leftover.0 {
+
+                first = leftover.1;
+                break;
+            }
+
+            if idx == line_chars.len() {
+                
+                idx = 0;
+                continue;
+            }
+            idx += 1;
         }
-        println!("first")
-   }
+
+        idx = 0;
+        loop {
+            let current: String = String::from(reverse_chars.get(idx).unwrap());
+            
+            if current.parse::<i32>().is_ok() {
+                last = current;
+                break;
+            }
+            let mut slice:Vec<String> = reverse_chars[0..idx+1].iter().map(|c| c.to_string()).collect();
+                slice.reverse();
+           
+            if is_number(&slice) {
+                last = to_number(&slice).to_string();
+                break;
+            }
+            
+            let leftover = reverse_has_number(&slice);
+
+            if leftover.0 {
+                last = leftover.1;
+                break;
+            }
+            if idx == reverse_chars.len() {
+                idx = 0;
+                continue;
+            }
+            idx += 1;
+        }
+
+        let combo = format!("{}{}",first,last);
+        println!("{combo}");
+        sum += combo.parse::<i32>().unwrap();
+    }
+    println!("{}",sum);
+}
+
+fn reverse_has_number(slice: &[String])->(bool,String){
+    let mut slice = Vec::from(slice);
+    loop {
+        if slice.len() == 0 {
+                return (false, "".to_string());
+            }
+
+        slice.reverse();
+        slice.pop();
+        slice.reverse();
+        println!("{:?}", slice);
+        if is_number(&slice){
+            return (true, slice.join(""));
+        }
+
+    }
 }
 
 
-fn is_number(slice:&[String])-> bool{
+
+fn has_number(slice: &[String])->(bool,String){
+   let mut slice = Vec::from(slice);
+
+    loop{
+        if slice.len() == 0{
+            return (false, "".to_string());
+        }
+
+        slice.pop();
+        if is_number(&slice){
+            return (true, slice.join(""));
+        }
+        
+    }
+}
+fn to_number(slice: &[String]) -> i32{
+    match slice.join("").as_str() {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+        "four" => 4,
+        "five" => 5,
+        "six" => 6,
+        "seven" => 7,
+        "eight" => 8,
+        "nine" => 9,
+        _ => panic!("number not supported"),
+    }
+
+}
+
+fn is_number(slice: &[String]) -> bool {
+
+    
+    
 
     match slice.join("").as_str() {
-       "one" => true,
-        "two"=> true,
+        "one" => true,
+        "two" => true,
         "three" => true,
         "four" => true,
         "five" => true,
@@ -74,6 +174,6 @@ fn is_number(slice:&[String])-> bool{
         "seven" => true,
         "eight" => true,
         "nine" => true,
-        _ => false
+        _ => false,
     }
-}       
+}
